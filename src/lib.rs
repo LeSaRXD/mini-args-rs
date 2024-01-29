@@ -23,10 +23,7 @@ impl<T: FromStr> ValueArg<T> {
 			},
 			None => return None,
 		};
-		Some(
-			T::from_str(&value)
-				.unwrap_or_else(|_| panic!("Couldn't parse value argument -{} (--{})", self.short_name, self.long_name))
-		)
+		T::from_str(&value).ok()
 	}
 }
 
@@ -59,14 +56,5 @@ mod test {
 		assert_eq!(arg_parser.parse_value::<f32>("b", "bad"), Some(1.2f32));
 		assert_eq!(arg_parser.parse_value::<bool>("h", "hat"), Some(true));
 		assert_eq!(arg_parser.parse_value::<i128>("l", "long"), None);
-	}
-	#[should_panic(expected = "Couldn't parse value argument -w (--why)")]
-	#[test]
-	fn failed_arg() {
-		let arg_parser = ArgParser {
-			argument_str: ARGS.to_owned(),
-		};
-
-		arg_parser.parse_value::<i32>("w", "why");
 	}
 }
